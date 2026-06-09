@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-brand-surface text-brand-black antialiased;
+    }
+}
+
+@layer components {
+    .mc-page {
+        @apply mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
+    }
+
+    .mc-page-header {
+        @apply mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between;
+    }
+
+    .mc-page-title {
+        @apply flex items-center gap-2.5 text-2xl font-bold tracking-tight text-brand-black;
+    }
+
+    .mc-page-subtitle {
+        @apply mt-1 text-sm text-brand-muted;
+    }
+
+    .mc-icon {
+        @apply text-brand-orange;
+    }
+
+    .mc-card {
+        @apply rounded-xl border border-brand-border bg-white p-6 shadow-card;
+    }
+
+    .mc-card-sm {
+        @apply rounded-xl border border-brand-border bg-white p-4 shadow-card;
+    }
+
+    .mc-card-title {
+        @apply text-sm font-semibold text-brand-black;
+    }
+
+    .mc-label {
+        @apply text-sm font-medium text-brand-black;
+    }
+
+    .mc-hint {
+        @apply text-xs text-brand-muted;
+    }
+
+    .mc-field {
+        @apply flex w-full flex-col;
+    }
+
+    .mc-input {
+        @apply w-full rounded-lg border-brand-border bg-white text-sm text-brand-black shadow-sm placeholder:text-zinc-400 focus:border-brand-orange focus:ring-brand-orange;
+    }
+
+    .mc-field .mc-input,
+    .mc-field select.mc-input,
+    .mc-field textarea.mc-input {
+        @apply mt-1.5;
+    }
+
+    .mc-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+
+    .mc-btn-primary {
+        @apply mc-btn bg-brand-orange text-white hover:bg-brand-orange-dark focus:ring-brand-orange;
+    }
+
+    .mc-btn-secondary {
+        @apply mc-btn border border-brand-border bg-white text-brand-black hover:bg-zinc-50 focus:ring-zinc-300;
+    }
+
+    .mc-btn-ghost {
+        @apply mc-btn text-brand-muted hover:bg-zinc-100 hover:text-brand-black focus:ring-zinc-300;
+    }
+
+    .mc-alert-success {
+        @apply rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800;
+    }
+
+    .mc-alert-warning {
+        @apply rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800;
+    }
+
+    .mc-table-wrap {
+        @apply overflow-hidden rounded-xl border border-brand-border bg-white shadow-card;
+    }
+
+    .mc-table {
+        @apply min-w-full text-sm;
+    }
+
+    .mc-table thead {
+        @apply bg-zinc-50;
+    }
+
+    .mc-table th {
+        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-brand-muted;
+    }
+
+    .mc-table td {
+        @apply px-4 py-3 text-brand-black;
+    }
+
+    .mc-table tbody {
+        @apply divide-y divide-brand-border;
+    }
+
+    .mc-badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    }
+
+    .mc-badge-success {
+        @apply mc-badge bg-emerald-100 text-emerald-700;
+    }
+
+    .mc-badge-warning {
+        @apply mc-badge bg-amber-100 text-amber-700;
+    }
+
+    .mc-link {
+        @apply font-medium text-brand-orange hover:text-brand-orange-dark hover:underline;
+    }
+
+    .mc-stat-card {
+        @apply rounded-xl border border-brand-border bg-white p-5 shadow-card transition hover:shadow-card-hover;
+    }
+
+    .mc-stat-label {
+        @apply text-xs font-medium uppercase tracking-wide text-brand-muted;
+    }
+
+    .mc-stat-value {
+        @apply mt-2 text-2xl font-bold text-brand-black;
+    }
+
+    .mc-nav-link {
+        @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-zinc-800 hover:text-white;
+    }
+
+    .mc-nav-link-active {
+        @apply mc-nav-link bg-zinc-800 text-white;
+    }
+
+    .mc-nav-link-active .mc-nav-icon {
+        @apply text-brand-orange;
+    }
+
+    .mc-nav-icon {
+        @apply w-4 text-center text-sm text-zinc-400;
+    }
+
+    .mc-form-section {
+        @apply space-y-4;
+    }
+
+    .mc-form-grid {
+        @apply grid grid-cols-1 gap-4 md:grid-cols-2;
+    }
+
+    .mc-item-row {
+        @apply grid grid-cols-1 items-start gap-4 rounded-lg border border-brand-border bg-zinc-50/50 p-4 md:grid-cols-3;
+    }
+
+    .mc-form-grid .mc-field {
+        @apply h-full;
+    }
+
+    .mc-upload-zone {
+        @apply rounded-lg border border-dashed border-brand-border bg-zinc-50 p-4 text-sm text-brand-muted;
+    }
+}
