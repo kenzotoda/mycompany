@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Models\Attachment;
+use App\Models\Purchase;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class AttachmentService
 {
@@ -12,19 +15,27 @@ class AttachmentService
     {
         $files = array_values(array_filter($files));
 
+        $disk = $this->diskForModel($model);
+        $folder = strtolower(class_basename($model));
+
         foreach ($files as $file) {
             if (! $file) {
                 continue;
             }
 
-            $path = $file->store('attachments/'.$user->company_id.'/'.strtolower(class_basename($model)), 'public');
+            $filename = Str::uuid().'_'.$file->getClientOriginalName();
+            $path = $file->storeAs(
+                "attachments/{$user->company_id}/{$folder}/{$model->id}",
+                $filename,
+                $disk,
+            );
 
             Attachment::create([
                 'company_id' => $user->company_id,
                 'attachable_type' => $model::class,
                 'attachable_id' => $model->id,
                 'category' => $category,
-                'disk' => 'public',
+                'disk' => $disk,
                 'path' => $path,
                 'original_name' => $file->getClientOriginalName(),
                 'mime_type' => $file->getMimeType(),
@@ -32,5 +43,14 @@ class AttachmentService
                 'uploaded_by' => $user->id,
             ]);
         }
+    }
+
+    private function diskForModel(Model $model): string
+    {
+        return match ($model::class) {
+            Purchase::class => config('supabase.disks.compras'),
+            Sale::class => config('supabase.disks.vendas'),
+            default => 'public',
+        };
     }
 }
