@@ -9,6 +9,10 @@
         </a>
     </div>
 
+    @if (session('status'))
+        <div class="mc-alert-success"><i class="fa-solid fa-circle-check mr-2"></i>{{ session('status') }}</div>
+    @endif
+
     <div class="mc-table-wrap">
         <table class="mc-table">
             <thead>

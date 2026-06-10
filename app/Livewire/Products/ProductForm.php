@@ -14,6 +14,8 @@ class ProductForm extends Component
     public string $name = '';
 
     public string $sku = '';
+    
+    public string $stock_quantity = '0';
 
     public function mount(?int $productId = null): void
     {
@@ -29,6 +31,7 @@ class ProductForm extends Component
 
         $this->name = $product->name;
         $this->sku = $product->sku;
+        $this->stock_quantity = (string) $product->stockUnits();
     }
 
     public function save(): void
@@ -49,7 +52,7 @@ class ProductForm extends Component
             $this->authorize('create', Product::class);
         }
 
-        $data = $this->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'sku' => [
                 'nullable',
@@ -59,9 +62,18 @@ class ProductForm extends Component
                     ->where(fn ($query) => $query->where('company_id', $companyId))
                     ->ignore($product?->id),
             ],
-        ], [
+        ];
+
+        if ($product) {
+            $rules['stock_quantity'] = ['required', 'integer', 'min:0'];
+        }
+
+        $data = $this->validate($rules, [
             'name.required' => 'Informe o nome do produto.',
             'sku.unique' => 'Este SKU já está em uso por outro produto.',
+            'stock_quantity.required' => 'Informe o estoque atual do produto.',
+            'stock_quantity.integer' => 'O estoque deve ser um número inteiro.',
+            'stock_quantity.min' => 'O estoque não pode ser negativo.',
         ]);
 
         $sku = $data['sku'] ?: ($product?->sku ?? 'SKU-'.strtoupper(Str::random(8)));
@@ -70,6 +82,7 @@ class ProductForm extends Component
             $product->update([
                 'name' => $data['name'],
                 'sku' => $sku,
+                'stock_quantity' => (int) $data['stock_quantity'],
             ]);
 
             session()->flash('status', 'Produto atualizado com sucesso.');

@@ -72,7 +72,7 @@ class PurchaseForm extends Component
         $attachmentService->attachToModel($purchase, $this->documentsForSave(), auth()->user(), 'purchase_document');
 
         session()->flash('status', 'Compra registrada com sucesso.');
-        $this->redirectRoute('purchases.index', navigate: true);
+        $this->redirectRoute('purchases.index');
     }
 
     public function render()

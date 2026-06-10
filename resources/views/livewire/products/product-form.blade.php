@@ -6,7 +6,7 @@
                 {{ $editing ? 'Editar produto' : 'Cadastrar produto' }}
             </h1>
             <p class="mc-page-subtitle">
-                {{ $editing ? 'Atualize o nome ou o SKU do produto' : 'Informe o nome e, se quiser, um código SKU' }}
+                {{ $editing ? 'Atualize nome, SKU e estoque atual do produto' : 'Informe o nome e, se quiser, um código SKU' }}
             </p>
         </div>
         <a href="{{ route('products.index') }}" class="mc-btn-secondary">
@@ -24,6 +24,23 @@
             @error('sku') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             <p class="mt-1.5 mc-hint">Código interno para identificar o produto no estoque.</p>
         </x-field>
+
+        @if ($editing)
+            <x-field label="Estoque atual" required>
+                <x-numeric-input
+                    :decimal="false"
+                    wire:model.live="stock_quantity"
+                    placeholder="0"
+                    required
+                    data-numeric-integer
+                    data-validate-min="0"
+                    data-error-required="Informe o estoque atual do produto."
+                    data-error-min="O estoque não pode ser negativo."
+                />
+                @error('stock_quantity') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                <p class="mt-1.5 mc-hint">Este campo só pode ser alterado na edição.</p>
+            </x-field>
+        @endif
 
         <button
             type="button"
