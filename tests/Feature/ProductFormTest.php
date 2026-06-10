@@ -6,6 +6,7 @@ use App\Livewire\Products\ProductForm;
 use App\Livewire\Products\ProductIndex;
 use App\Models\Company;
 use App\Models\Product;
+use App\Models\Supplier;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,6 +52,11 @@ class ProductFormTest extends TestCase
     public function test_product_can_be_updated(): void
     {
         $user = $this->userWithCompany();
+        $supplier = Supplier::create([
+            'company_id' => $user->company_id,
+            'name' => 'Fornecedor A',
+            'document' => '11222333000181',
+        ]);
 
         $product = Product::create([
             'company_id' => $user->company_id,
@@ -62,6 +68,8 @@ class ProductFormTest extends TestCase
             ->test(ProductForm::class, ['productId' => $product->id])
             ->set('name', 'Produto novo')
             ->set('sku', 'SKU-NOVO01')
+            ->set('supplier_id', $supplier->id)
+            ->set('stock_quantity', '5')
             ->call('save')
             ->assertHasNoErrors()
             ->assertRedirect(route('products.index', absolute: false));
@@ -70,6 +78,8 @@ class ProductFormTest extends TestCase
             'id' => $product->id,
             'name' => 'Produto novo',
             'sku' => 'SKU-NOVO01',
+            'supplier_id' => $supplier->id,
+            'stock_quantity' => 5,
         ]);
     }
 

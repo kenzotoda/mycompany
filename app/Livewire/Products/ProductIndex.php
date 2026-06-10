@@ -25,7 +25,7 @@ class ProductIndex extends Component
 
     public function render()
     {
-        $products = Product::with('category')
+        $products = Product::with(['category', 'supplier'])
             ->where('company_id', auth()->user()->company_id)
             ->latest()
             ->paginate(10);

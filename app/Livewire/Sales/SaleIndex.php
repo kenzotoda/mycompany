@@ -12,7 +12,7 @@ class SaleIndex extends Component
 
     public function render()
     {
-        $sales = Sale::with(['customer', 'attachments'])
+        $sales = Sale::with(['customer', 'items.product', 'attachments'])
             ->where('company_id', auth()->user()->company_id)
             ->latest('sale_date')
             ->paginate(10);

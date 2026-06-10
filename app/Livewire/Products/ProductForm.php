@@ -3,6 +3,7 @@
 namespace App\Livewire\Products;
 
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -16,6 +17,8 @@ class ProductForm extends Component
     public string $sku = '';
     
     public string $stock_quantity = '0';
+
+    public ?int $supplier_id = null;
 
     public function mount(?int $productId = null): void
     {
@@ -32,6 +35,7 @@ class ProductForm extends Component
         $this->name = $product->name;
         $this->sku = $product->sku;
         $this->stock_quantity = (string) $product->stockUnits();
+        $this->supplier_id = $product->supplier_id;
     }
 
     public function save(): void
@@ -54,6 +58,10 @@ class ProductForm extends Component
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
+            'supplier_id' => [
+                'nullable',
+                Rule::exists('suppliers', 'id')->where(fn ($query) => $query->where('company_id', $companyId)),
+            ],
             'sku' => [
                 'nullable',
                 'string',
@@ -70,6 +78,7 @@ class ProductForm extends Component
 
         $data = $this->validate($rules, [
             'name.required' => 'Informe o nome do produto.',
+            'supplier_id.exists' => 'Selecione um fornecedor válido.',
             'sku.unique' => 'Este SKU já está em uso por outro produto.',
             'stock_quantity.required' => 'Informe o estoque atual do produto.',
             'stock_quantity.integer' => 'O estoque deve ser um número inteiro.',
@@ -81,6 +90,7 @@ class ProductForm extends Component
         if ($product) {
             $product->update([
                 'name' => $data['name'],
+                'supplier_id' => $data['supplier_id'] ?: null,
                 'sku' => $sku,
                 'stock_quantity' => (int) $data['stock_quantity'],
             ]);
@@ -90,6 +100,7 @@ class ProductForm extends Component
             Product::create([
                 'company_id' => $companyId,
                 'name' => $data['name'],
+                'supplier_id' => $data['supplier_id'] ?: null,
                 'sku' => $sku,
             ]);
 
@@ -110,6 +121,10 @@ class ProductForm extends Component
     {
         return view('livewire.products.product-form', [
             'editing' => $this->productId !== null,
+            'suppliers' => Supplier::query()
+                ->where('company_id', auth()->user()->company_id)
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 }

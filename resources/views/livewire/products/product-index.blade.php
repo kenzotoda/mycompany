@@ -25,9 +25,8 @@
                 <tr>
                     <th>Produto</th>
                     <th class="w-28">SKU</th>
+                    <th>Fornecedor</th>
                     <th class="mc-col-right w-28">Estoque</th>
-                    <th class="mc-col-right w-28">Compra</th>
-                    <th class="mc-col-right w-28">Venda</th>
                     <th class="mc-col-center">Status</th>
                     <th class="mc-col-actions">Ações</th>
                 </tr>
@@ -37,9 +36,8 @@
                     <tr wire:key="product-row-{{ $product->id }}" class="{{ $product->hasLowStock() ? 'bg-amber-50/60' : '' }}">
                         <td class="font-medium">{{ $product->name }}</td>
                         <td class="text-brand-muted">{{ $product->sku }}</td>
+                        <td>{{ $product->supplier?->name ?? 'Sem fornecedor' }}</td>
                         <td class="mc-col-right font-semibold">{{ $product->formattedStock() }}</td>
-                        <td class="mc-col-right">R$ {{ number_format($product->purchase_price, 2, ',', '.') }}</td>
-                        <td class="mc-col-right">R$ {{ number_format($product->sale_price, 2, ',', '.') }}</td>
                         <td class="mc-col-center">
                             @if ($product->hasLowStock())
                                 <span class="mc-badge-warning"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Sem estoque</span>
@@ -67,7 +65,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="py-12 text-center text-brand-muted">Nenhum produto cadastrado.</td></tr>
+                    <tr><td colspan="6" class="py-12 text-center text-brand-muted">Nenhum produto cadastrado.</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -44,11 +44,20 @@
             @endif
 
             @foreach ($items as $index => $item)
-                <div class="mc-item-row">
+                <div class="mc-item-row md:grid-cols-4">
+                    <x-field label="Fornecedor do item">
+                        <x-searchable-select wire:model.live="items.{{ $index }}.supplier_id" wire:key="purchase-item-supplier-{{ $index }}">
+                            <option value="">Sem fornecedor</option>
+                            @foreach ($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                            @endforeach
+                        </x-searchable-select>
+                        @error('items.'.$index.'.supplier_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </x-field>
                     <x-field label="Produto" required>
                         <x-searchable-select wire:model="items.{{ $index }}.product_id" wire:key="purchase-product-{{ $index }}" required data-error-required="Selecione o produto.">
                             <option value="">Selecione</option>
-                            @foreach ($products as $product)
+                            @foreach ($products->where('supplier_id', data_get($item, 'supplier_id') ?: null) as $product)
                                 <option value="{{ $product->id }}">{{ $product->name }}</option>
                             @endforeach
                         </x-searchable-select>

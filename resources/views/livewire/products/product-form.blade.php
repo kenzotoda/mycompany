@@ -25,6 +25,16 @@
             <p class="mt-1.5 mc-hint">Código interno para identificar o produto no estoque.</p>
         </x-field>
 
+        <x-field label="Fornecedor (opcional)">
+            <x-searchable-select wire:model.live="supplier_id">
+                <option value="">Sem fornecedor</option>
+                @foreach ($suppliers as $supplier)
+                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                @endforeach
+            </x-searchable-select>
+            @error('supplier_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+        </x-field>
+
         @if ($editing)
             <x-field label="Estoque atual" required>
                 <x-numeric-input

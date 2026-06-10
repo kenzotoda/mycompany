@@ -5,9 +5,11 @@ namespace App\Livewire\Sales;
 use App\Livewire\Concerns\ManagesDocumentUploads;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Supplier;
 use App\Services\AttachmentService;
 use App\Services\SaleService;
 use App\Support\PaymentMethods;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -28,12 +30,12 @@ class SaleForm extends Component
     public function mount(): void
     {
         $this->sale_date = now()->toDateString();
-        $this->items = [['product_id' => null, 'quantity' => 1, 'unit_price' => 0]];
+        $this->items = [['supplier_id' => null, 'product_id' => null, 'quantity' => 1, 'unit_price' => 0]];
     }
 
     public function addItem(): void
     {
-        $this->items[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0];
+        $this->items[] = ['supplier_id' => null, 'product_id' => null, 'quantity' => 1, 'unit_price' => 0];
     }
 
     public function updatedPaymentMethod(string $value): void
@@ -47,12 +49,31 @@ class SaleForm extends Component
 
     public function updatedItems(mixed $value, string $key): void
     {
-        if (! str_ends_with($key, 'product_id') || ! $value) {
+        $segments = explode('.', $key);
+
+        if (count($segments) !== 2) {
             return;
         }
 
-        $index = (int) explode('.', $key)[0];
-        $product = Product::find($value);
+        $index = (int) $segments[0];
+        $field = $segments[1];
+
+        if ($field === 'supplier_id') {
+            $this->items[$index]['product_id'] = null;
+            $this->items[$index]['unit_price'] = 0;
+            $this->resetValidation("items.$index.product_id");
+            $this->resetValidation("items.$index.unit_price");
+
+            return;
+        }
+
+        if ($field !== 'product_id' || ! $value) {
+            return;
+        }
+
+        $product = Product::query()
+            ->where('company_id', auth()->user()->company_id)
+            ->find($value);
 
         if ($product) {
             $this->items[$index]['unit_price'] = $product->sale_price;
@@ -61,6 +82,7 @@ class SaleForm extends Component
 
     public function save(SaleService $saleService, AttachmentService $attachmentService): void
     {
+        $companyId = auth()->user()->company_id;
         $isCredit = $this->payment_method === PaymentMethods::CREDITO;
 
         $payload = [
@@ -87,6 +109,7 @@ class SaleForm extends Component
             'payment_status' => ['required', 'string', 'max:50'],
             'installments' => [$isCredit ? 'required' : 'nullable', 'integer', 'min:2', 'max:24'],
             'items' => ['required', 'array', 'min:1'],
+            'items.*.supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where(fn ($query) => $query->where('company_id', $companyId))],
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['required', 'numeric', 'gt:0'],
@@ -96,9 +119,27 @@ class SaleForm extends Component
         ])->validate();
 
         foreach ($this->items as $index => $item) {
-            $product = Product::find($item['product_id']);
+            $product = Product::query()
+                ->where('company_id', auth()->user()->company_id)
+                ->find($item['product_id']);
 
-            if ($product && (int) $item['quantity'] > $product->stockUnits()) {
+            if (! $product) {
+                continue;
+            }
+
+            $itemSupplierId = $item['supplier_id'] ? (int) $item['supplier_id'] : null;
+            $productSupplierId = $product->supplier_id ? (int) $product->supplier_id : null;
+
+            if ($itemSupplierId !== $productSupplierId) {
+                $this->addError(
+                    "items.$index.product_id",
+                    'Selecione um produto do fornecedor informado neste item.'
+                );
+
+                return;
+            }
+
+            if ((int) $item['quantity'] > $product->stockUnits()) {
                 $this->addError(
                     "items.$index.quantity",
                     'Estoque insuficiente. Disponível: '.$product->formattedStock()
@@ -128,6 +169,7 @@ class SaleForm extends Component
 
         return view('livewire.sales.sale-form', [
             'customers' => Customer::where('company_id', $companyId)->orderBy('name')->get(),
+            'suppliers' => Supplier::where('company_id', $companyId)->orderBy('name')->get(),
             'products' => Product::where('company_id', $companyId)->orderBy('name')->get(),
         ]);
     }
