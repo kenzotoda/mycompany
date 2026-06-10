@@ -95,6 +95,24 @@ class ProductFormTest extends TestCase
         $this->assertSame(0, Product::count());
     }
 
+    public function test_product_index_search_is_case_insensitive(): void
+    {
+        $user = $this->userWithCompany();
+
+        Product::create([
+            'company_id' => $user->company_id,
+            'name' => 'Camiseta Premium',
+            'sku' => 'SKU-PREM01',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(ProductIndex::class)
+            ->set('query', 'camiseta')
+            ->assertSee('Camiseta Premium')
+            ->set('query', 'PREM01')
+            ->assertSee('Camiseta Premium');
+    }
+
     public function test_product_can_be_deleted_from_index(): void
     {
         $user = $this->userWithCompany();

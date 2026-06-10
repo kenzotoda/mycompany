@@ -3,6 +3,8 @@
 namespace App\Livewire\Products;
 
 use App\Models\Product;
+use App\Support\SearchQuery;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -33,19 +35,39 @@ class ProductIndex extends Component
     public function render()
     {
         $search = trim($this->query);
+        $companyId = auth()->user()->company_id;
+        $hasSupplierColumn = Schema::hasColumn('products', 'supplier_id');
+        $relations = ['category'];
 
-        $products = Product::with(['category', 'supplier'])
-            ->where('company_id', auth()->user()->company_id)
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($inner) use ($search) {
-                    $inner->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%")
-                        ->orWhereHas('supplier', fn ($supplier) => $supplier->where('name', 'like', "%{$search}%"));
-                });
-            })
+        if ($hasSupplierColumn) {
+            $relations[] = 'supplier';
+        }
+
+        $productsQuery = Product::query()
+            ->with($relations)
+            ->where('company_id', $companyId);
+
+        if ($search !== '') {
+            $productsQuery->where(function ($inner) use ($search, $hasSupplierColumn) {
+                SearchQuery::whereLikeInsensitive($inner, 'name', $search);
+                SearchQuery::orWhereLikeInsensitive($inner, 'sku', $search);
+
+                if ($hasSupplierColumn) {
+                    $inner->orWhereHas(
+                        'supplier',
+                        fn ($supplier) => SearchQuery::whereLikeInsensitive($supplier, 'name', $search)
+                    );
+                }
+            });
+        }
+
+        $products = $productsQuery
             ->latest()
             ->paginate(50);
 
-        return view('livewire.products.product-index', compact('products'));
+        return view('livewire.products.product-index', [
+            'products' => $products,
+            'hasSupplierColumn' => $hasSupplierColumn,
+        ]);
     }
 }

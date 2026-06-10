@@ -20,14 +20,23 @@
     </div>
 
     <div class="mc-card-sm">
-        <div class="relative">
-            <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-brand-muted"></i>
-            <input
-                type="text"
-                wire:model.live.debounce.300ms="query"
-                placeholder="Pesquisar por produto, SKU ou fornecedor..."
-                class="mc-input !mt-0 pl-10"
-            />
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="relative w-full sm:max-w-md">
+                <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-brand-muted"></i>
+                <input
+                    type="search"
+                    wire:model.live.debounce.300ms="query"
+                    placeholder="Pesquisar por produto, SKU{{ $hasSupplierColumn ? ' ou fornecedor' : '' }}..."
+                    class="mc-input !mt-0 pl-10"
+                    autocomplete="off"
+                />
+            </div>
+            <p class="text-sm text-brand-muted" wire:loading.remove wire:target="query">
+                Mostrando {{ $products->count() }} de {{ $products->total() }} produto(s)
+            </p>
+            <p class="text-sm text-brand-orange" wire:loading wire:target="query">
+                <i class="fa-solid fa-spinner fa-spin mr-1"></i> Pesquisando...
+            </p>
         </div>
     </div>
 
@@ -77,7 +86,15 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="py-12 text-center text-brand-muted">Nenhum produto cadastrado.</td></tr>
+                    <tr>
+                        <td colspan="6" class="py-12 text-center text-brand-muted">
+                            @if (trim($query) !== '')
+                                Nenhum produto encontrado para "{{ $query }}".
+                            @else
+                                Nenhum produto cadastrado.
+                            @endif
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
