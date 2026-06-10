@@ -9,7 +9,7 @@
         </a>
     </div>
 
-    <form class="mc-card mc-form-section" novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save())">
+    <form class="mc-card mc-form-section" novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save(), $wire)">
         <x-field label="Fornecedor" required>
             <x-searchable-select wire:model="supplier_id" required data-error-required="Selecione um fornecedor.">
                 <option value="">Selecione um fornecedor</option>
@@ -79,7 +79,7 @@
         <button
             type="button"
             wire:loading.attr="disabled"
-            x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save())"
+            x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save(), $wire)"
             class="mc-btn-primary"
         >
             <i class="fa-solid fa-floppy-disk"></i> Salvar compra

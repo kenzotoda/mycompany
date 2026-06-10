@@ -1,3 +1,5 @@
+import { getSyncedInputValue, normalizeDomFromAlpine, syncWireInputs } from './wire-input-sync';
+
 function digitsOnly(value) {
     return (value ?? '').replace(/\D/g, '');
 }
@@ -40,6 +42,10 @@ function getSelect2Container(field) {
     }
 
     return null;
+}
+
+function getFieldValue(field) {
+    return getSyncedInputValue(field).trim();
 }
 
 function clearFieldError(field) {
@@ -102,7 +108,7 @@ function validateStandardField(field) {
         return true;
     }
 
-    const value = (field.value ?? '').trim();
+    const value = getFieldValue(field);
     const isSelect = field.tagName === 'SELECT';
     const isEmpty = value === '';
 
@@ -173,6 +179,34 @@ function validateStandardField(field) {
     return true;
 }
 
+function validateSupplierDocument(form) {
+    if (form.dataset.validateSupplierDocument === undefined) {
+        return true;
+    }
+
+    const documentField = form.querySelector('[data-validate-document]');
+
+    if (! documentField || ! isVisible(documentField)) {
+        return true;
+    }
+
+    const digits = digitsOnly(getFieldValue(documentField));
+
+    if (! digits) {
+        showFieldError(documentField, 'Informe o CNPJ do fornecedor.');
+
+        return false;
+    }
+
+    if (digits.length !== 14) {
+        showFieldError(documentField, 'O CNPJ deve ter 14 dígitos no formato 00.000.000/0000-00.');
+
+        return false;
+    }
+
+    return true;
+}
+
 function validateCustomerDocument(form) {
     const documentType = form.querySelector('input[name="customer_document_type"]:checked')?.value ?? '';
     const documentField = form.querySelector('[data-validate-document]');
@@ -181,7 +215,7 @@ function validateCustomerDocument(form) {
         return true;
     }
 
-    const digits = digitsOnly(documentField.value);
+    const digits = digitsOnly(getFieldValue(documentField));
 
     if (documentType && ! digits) {
         showFieldError(documentField, `Informe o ${documentType.toUpperCase()} ou remova o tipo selecionado.`);
@@ -243,11 +277,20 @@ export function validateForm(form) {
             return;
         }
 
+        if (field.dataset.validateDocument !== undefined) {
+            return;
+        }
+
         if (! validateStandardField(field)) {
             isValid = false;
             firstInvalidField ??= field;
         }
     });
+
+    if (form.dataset.validateSupplierDocument !== undefined && ! validateSupplierDocument(form)) {
+        isValid = false;
+        firstInvalidField ??= form.querySelector('[data-validate-document]');
+    }
 
     if (form.dataset.validateCustomerDocument !== undefined && ! validateCustomerDocument(form)) {
         isValid = false;
@@ -266,21 +309,21 @@ export function validateForm(form) {
     return isValid;
 }
 
-export function submitValidatedForm(form, submitFn) {
-    window.flushFormInputs?.(form);
+export async function submitValidatedForm(form, submitFn, wire = null) {
+    window.syncMaskedInputs?.(form);
+    normalizeDomFromAlpine(form);
 
-    return new Promise((resolve) => {
-        queueMicrotask(() => {
-            if (! validateForm(form)) {
-                resolve(false);
+    if (! validateForm(form)) {
+        return false;
+    }
 
-                return;
-            }
+    if (wire) {
+        syncWireInputs(form, wire);
+    }
 
-            submitFn();
-            resolve(true);
-        });
-    });
+    submitFn();
+
+    return true;
 }
 
 function bindFormValidationClear() {

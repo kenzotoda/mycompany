@@ -4,7 +4,6 @@ namespace App\Livewire\Suppliers;
 
 use App\Models\Supplier;
 use App\Support\BrazilianDocument;
-use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -28,7 +27,7 @@ class SupplierIndex extends Component
 
         $this->editingId = $supplier->id;
         $this->name = $supplier->name;
-        $this->document = $supplier->document;
+        $this->document = BrazilianDocument::digitsOnly($supplier->document);
         $this->phone = $supplier->phone ?? '';
         $this->email = $supplier->email ?? '';
         $this->resetValidation();
@@ -53,30 +52,34 @@ class SupplierIndex extends Component
 
         $supplier = $this->editingId ? $this->findSupplier($this->editingId) : null;
 
-        $this->document = BrazilianDocument::formatCnpj($this->document);
-        $this->phone = $this->phone ? BrazilianDocument::formatPhone($this->phone) : '';
+        $this->normalizeFields();
 
         $data = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'document' => [
-                'required',
-                'string',
-                'max:18',
-                Rule::unique('suppliers', 'document')
-                    ->where(fn ($query) => $query->where('company_id', $companyId))
-                    ->ignore($supplier?->id),
-            ],
+            'document' => ['nullable', 'string', 'max:14'],
             'phone' => ['nullable', 'string', 'max:15'],
             'email' => ['nullable', 'email', 'max:255'],
         ], [
             'name.required' => 'Informe o nome do fornecedor.',
-            'document.required' => 'Informe o CNPJ do fornecedor.',
-            'document.unique' => 'Este CNPJ já está cadastrado para outro fornecedor.',
             'email.email' => 'Informe um e-mail válido.',
         ]);
 
-        if (! BrazilianDocument::isCompleteCnpj($data['document'])) {
+        $documentDigits = BrazilianDocument::digitsOnly($data['document']);
+
+        if ($documentDigits === '') {
+            $this->addError('document', 'Informe o CNPJ do fornecedor.');
+
+            return;
+        }
+
+        if (! BrazilianDocument::isCompleteCnpj($documentDigits)) {
             $this->addError('document', 'O CNPJ deve ter 14 dígitos no formato 00.000.000/0000-00.');
+
+            return;
+        }
+
+        if ($this->documentAlreadyExists($documentDigits, $companyId, $supplier?->id)) {
+            $this->addError('document', 'Este CNPJ já está cadastrado para outro fornecedor.');
 
             return;
         }
@@ -89,7 +92,7 @@ class SupplierIndex extends Component
 
         $payload = [
             'name' => $data['name'],
-            'document' => $data['document'],
+            'document' => $documentDigits,
             'phone' => $data['phone'] ?: null,
             'email' => $data['email'] ?: null,
         ];
@@ -116,7 +119,7 @@ class SupplierIndex extends Component
             $this->cancelEdit();
         }
 
-        $supplier->delete();
+        $supplier->forceDelete();
 
         session()->flash('status', 'Fornecedor excluído com sucesso.');
     }
@@ -126,6 +129,21 @@ class SupplierIndex extends Component
         return Supplier::query()
             ->where('company_id', auth()->user()->company_id)
             ->findOrFail($supplierId);
+    }
+
+    private function normalizeFields(): void
+    {
+        $this->phone = $this->phone ? BrazilianDocument::formatPhone($this->phone) : '';
+        $this->document = BrazilianDocument::digitsOnly($this->document);
+    }
+
+    private function documentAlreadyExists(string $documentDigits, int $companyId, ?int $ignoreId = null): bool
+    {
+        return Supplier::query()
+            ->where('company_id', $companyId)
+            ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+            ->get()
+            ->contains(fn (Supplier $existing) => BrazilianDocument::digitsOnly($existing->document) === $documentDigits);
     }
 
     public function render()

@@ -42,7 +42,7 @@ class SupplierCnpjTest extends TestCase
 
         $this->assertDatabaseHas('suppliers', [
             'name' => 'Fornecedor Teste',
-            'document' => '11.222.333/0001-81',
+            'document' => '11222333000181',
         ]);
     }
 
@@ -57,7 +57,7 @@ class SupplierCnpjTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('suppliers', [
-            'document' => '11.222.333/0001-81',
+            'document' => '11222333000181',
         ]);
     }
 
@@ -67,7 +67,7 @@ class SupplierCnpjTest extends TestCase
 
         Livewire::test(SupplierIndex::class)
             ->set('name', 'Fornecedor Teste')
-            ->set('document', '11.222.333/0001-8')
+            ->set('document', '1122233300018')
             ->call('save')
             ->assertHasErrors(['document']);
     }
@@ -79,7 +79,7 @@ class SupplierCnpjTest extends TestCase
         Supplier::create([
             'company_id' => $user->company_id,
             'name' => 'Existente',
-            'document' => '11.222.333/0001-81',
+            'document' => '11222333000181',
         ]);
 
         Livewire::actingAs($user)
@@ -97,7 +97,7 @@ class SupplierCnpjTest extends TestCase
         $supplier = Supplier::create([
             'company_id' => $user->company_id,
             'name' => 'Fornecedor antigo',
-            'document' => '11.222.333/0001-81',
+            'document' => '11222333000181',
             'phone' => '(11) 98765-4321',
             'email' => 'fornecedor@teste.com',
         ]);
@@ -107,7 +107,7 @@ class SupplierCnpjTest extends TestCase
             ->call('edit', $supplier->id)
             ->assertSet('editingId', $supplier->id)
             ->assertSet('name', 'Fornecedor antigo')
-            ->assertSet('document', '11.222.333/0001-81')
+            ->assertSet('document', '11222333000181')
             ->assertSet('phone', '(11) 98765-4321')
             ->assertSet('email', 'fornecedor@teste.com')
             ->set('name', 'Fornecedor novo')
@@ -118,7 +118,7 @@ class SupplierCnpjTest extends TestCase
         $this->assertDatabaseHas('suppliers', [
             'id' => $supplier->id,
             'name' => 'Fornecedor novo',
-            'document' => '11.222.333/0001-81',
+            'document' => '11222333000181',
         ]);
     }
 
@@ -129,7 +129,7 @@ class SupplierCnpjTest extends TestCase
         $supplier = Supplier::create([
             'company_id' => $user->company_id,
             'name' => 'Fornecedor removível',
-            'document' => '11.222.333/0001-81',
+            'document' => '11222333000181',
         ]);
 
         Livewire::actingAs($user)
@@ -137,7 +137,7 @@ class SupplierCnpjTest extends TestCase
             ->call('delete', $supplier->id)
             ->assertHasNoErrors();
 
-        $this->assertSoftDeleted('suppliers', [
+        $this->assertDatabaseMissing('suppliers', [
             'id' => $supplier->id,
         ]);
     }

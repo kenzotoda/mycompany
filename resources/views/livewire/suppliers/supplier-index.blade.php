@@ -10,7 +10,7 @@
         <div class="mc-alert-success"><i class="fa-solid fa-circle-check mr-2"></i>{{ session('status') }}</div>
     @endif
 
-    <form id="supplier-form" class="mc-card mc-form-section" wire:key="supplier-form-{{ $editingId ?? 'create' }}" novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save())">
+    <form id="supplier-form" class="mc-card mc-form-section" wire:key="supplier-form-{{ $editingId ?? 'create' }}" data-validate-supplier-document novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save(), $wire)">
         <h3 class="mc-card-title">
             <i class="fa-solid {{ $editingId ? 'fa-pen-to-square' : 'fa-plus' }} mr-2 text-brand-orange"></i>
             {{ $editingId ? 'Editar fornecedor' : 'Cadastrar fornecedor' }}
@@ -21,8 +21,8 @@
                 <input type="text" wire:model.live="name" class="mc-input" placeholder="Razão social ou nome" required data-error-required="Informe o nome do fornecedor.">
                 @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             </x-field>
-            <x-field label="CNPJ" required>
-                <x-masked-input mask="cnpj" wire:model.live="document" maxlength="18" placeholder="00.000.000/0000-00" required data-validate-cnpj data-error-required="Informe o CNPJ do fornecedor." />
+            <x-field label="CNPJ" required class="md:col-span-2" wire:key="supplier-document-cnpj-{{ $editingId ?? 'new' }}">
+                <x-masked-input mask="cnpj" store-digits wire:model.live="document" maxlength="18" placeholder="00.000.000/0000-00" required data-validate-document data-validate-cnpj />
                 @error('document') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             </x-field>
             <x-field label="Telefone">
@@ -39,7 +39,7 @@
             <button
                 type="button"
                 wire:loading.attr="disabled"
-                x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save())"
+                x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save(), $wire)"
                 class="mc-btn-primary"
             >
                 <i class="fa-solid fa-floppy-disk"></i>
@@ -68,7 +68,7 @@
                 @forelse ($suppliers as $supplier)
                     <tr class="{{ $editingId === $supplier->id ? 'bg-orange-50/60' : '' }}">
                         <td class="font-medium">{{ $supplier->name }}</td>
-                        <td class="whitespace-nowrap">{{ $supplier->document }}</td>
+                        <td class="whitespace-nowrap">{{ \App\Support\BrazilianDocument::formatCnpj($supplier->document) }}</td>
                         <td class="whitespace-nowrap">{{ $supplier->phone ?? '-' }}</td>
                         <td>{{ $supplier->email ?? '-' }}</td>
                         <td class="mc-col-actions">

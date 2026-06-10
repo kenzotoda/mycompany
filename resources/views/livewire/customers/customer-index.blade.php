@@ -10,7 +10,7 @@
         <div class="mc-alert-success"><i class="fa-solid fa-circle-check mr-2"></i>{{ session('status') }}</div>
     @endif
 
-    <form id="customer-form" class="mc-card mc-form-section" wire:key="customer-form-{{ $editingId ?? 'create' }}-{{ $document_type ?: 'none' }}" data-validate-customer-document novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save())">
+    <form id="customer-form" class="mc-card mc-form-section" wire:key="customer-form-{{ $editingId ?? 'create' }}-{{ $document_type ?: 'none' }}" data-validate-customer-document novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save(), $wire)">
         <h3 class="mc-card-title">
             <i class="fa-solid {{ $editingId ? 'fa-pen-to-square' : 'fa-user-plus' }} mr-2 text-brand-orange"></i>
             {{ $editingId ? 'Editar cliente' : 'Cadastrar cliente' }}
@@ -69,7 +69,7 @@
             <button
                 type="button"
                 wire:loading.attr="disabled"
-                x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save())"
+                x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save(), $wire)"
                 class="mc-btn-primary"
             >
                 <i class="fa-solid fa-floppy-disk"></i>

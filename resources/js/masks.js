@@ -46,6 +46,22 @@ export function blockMaskKey(event) {
     }
 }
 
+export function digitsFromMask(mask, value) {
+    const limits = { cpf: 11, cnpj: 14, phone: 11 };
+
+    return digitsOnly(value).slice(0, limits[mask] ?? 20);
+}
+
+export function formatByMask(mask, value) {
+    const formatters = {
+        cpf: formatCpf,
+        cnpj: formatCnpj,
+        phone: formatPhone,
+    };
+
+    return formatters[mask]?.(value) ?? value;
+}
+
 export function applyMask(event, mask) {
     const formatters = {
         cpf: formatCpf,
@@ -90,3 +106,5 @@ window.applyMask = applyMask;
 window.formatCpf = formatCpf;
 window.formatCnpj = formatCnpj;
 window.formatPhone = formatPhone;
+window.digitsFromMask = digitsFromMask;
+window.formatByMask = formatByMask;

@@ -100,7 +100,7 @@ class ProductFormTest extends TestCase
             ->call('delete', $product->id)
             ->assertHasNoErrors();
 
-        $this->assertSoftDeleted('products', [
+        $this->assertDatabaseMissing('products', [
             'id' => $product->id,
         ]);
     }

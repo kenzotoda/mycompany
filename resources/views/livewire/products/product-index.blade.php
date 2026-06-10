@@ -34,7 +34,7 @@
             </thead>
             <tbody>
                 @forelse ($products as $product)
-                    <tr class="{{ $product->hasLowStock() ? 'bg-amber-50/60' : '' }}">
+                    <tr wire:key="product-row-{{ $product->id }}" class="{{ $product->hasLowStock() ? 'bg-amber-50/60' : '' }}">
                         <td class="font-medium">{{ $product->name }}</td>
                         <td class="text-brand-muted">{{ $product->sku }}</td>
                         <td class="mc-col-right font-semibold">{{ $product->formattedStock() }}</td>
@@ -54,6 +54,7 @@
                                 </a>
                                 <button
                                     type="button"
+                                    wire:key="product-delete-{{ $product->id }}"
                                     wire:click="delete({{ $product->id }})"
                                     wire:confirm="Excluir o produto &quot;{{ $product->name }}&quot;?"
                                     wire:loading.attr="disabled"

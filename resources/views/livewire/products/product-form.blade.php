@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <form class="mc-card mc-form-section max-w-lg" novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save())">
+    <form class="mc-card mc-form-section max-w-lg" novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save(), $wire)">
         <x-field label="Nome do produto" required>
             <input type="text" wire:model.live="name" class="mc-input" placeholder="Ex: Camiseta básica" required data-error-required="Informe o nome do produto.">
             @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
@@ -28,7 +28,7 @@
         <button
             type="button"
             wire:loading.attr="disabled"
-            x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save())"
+            x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save(), $wire)"
             class="mc-btn-primary"
         >
             <i class="fa-solid fa-floppy-disk"></i>

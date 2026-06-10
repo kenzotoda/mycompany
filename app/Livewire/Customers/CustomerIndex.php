@@ -158,7 +158,7 @@ class CustomerIndex extends Component
             $this->cancelEdit();
         }
 
-        $customer->delete();
+        $customer->forceDelete();
 
         session()->flash('status', 'Cliente excluído com sucesso.');
     }

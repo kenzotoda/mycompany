@@ -18,7 +18,7 @@ class ProductIndex extends Component
 
         $this->authorize('delete', $product);
 
-        $product->delete();
+        $product->forceDelete();
 
         session()->flash('status', 'Produto excluído com sucesso.');
     }

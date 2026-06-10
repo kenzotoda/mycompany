@@ -12,6 +12,7 @@
     inputmode="{{ $decimal ? 'decimal' : 'numeric' }}"
     placeholder="{{ $placeholder }}"
     autocomplete="off"
+    data-wire-model="{{ $wireModel }}"
     wire:model.live="{{ $wireModel }}"
     x-on:keydown="window.blockNumericKey($event, { decimal: @js((bool) $decimal) })"
     x-on:input.capture="window.sanitizeNumericInput($event, { decimal: @js((bool) $decimal) })"

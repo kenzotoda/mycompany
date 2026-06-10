@@ -154,7 +154,7 @@ class CustomerDocumentTest extends TestCase
             ->call('delete', $customer->id)
             ->assertHasNoErrors();
 
-        $this->assertSoftDeleted('customers', [
+        $this->assertDatabaseMissing('customers', [
             'id' => $customer->id,
         ]);
     }
