@@ -62,7 +62,30 @@ export function applyMask(event, mask) {
     event.target.value = formatter(event.target.value);
 }
 
+export function formatAfterPaste(event, mask) {
+    queueMicrotask(() => {
+        applyMask({ target: event.target }, mask);
+        event.target.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+}
+
+export function syncMaskedInputs(root = document) {
+    root.querySelectorAll('[data-mask]').forEach((input) => {
+        applyMask({ target: input }, input.dataset.mask);
+    });
+}
+
+window.flushFormInputs = function (form) {
+    form?.querySelectorAll('input, textarea, select').forEach((field) => {
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+};
+
+window.syncMaskedInputs = syncMaskedInputs;
+
 window.blockMaskKey = blockMaskKey;
+window.formatAfterPaste = formatAfterPaste;
 window.applyMask = applyMask;
 window.formatCpf = formatCpf;
 window.formatCnpj = formatCnpj;

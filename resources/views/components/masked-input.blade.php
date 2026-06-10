@@ -14,19 +14,12 @@
     maxlength="{{ $maxlength }}"
     placeholder="{{ $placeholder }}"
     autocomplete="off"
-    wire:ignore
-    x-data="{ value: @entangle($wireModel).live }"
-    x-bind:value="value"
+    data-mask="{{ $mask }}"
+    wire:model.live="{{ $wireModel }}"
+    x-init="$nextTick(() => window.applyMask({ target: $el }, @js($mask)))"
     x-on:keydown="window.blockMaskKey($event)"
-    x-on:input="
-        window.applyMask($event, @js($mask));
-        value = $event.target.value;
-    "
-    x-on:paste.prevent="
-        const pasted = (event.clipboardData.getData('text') || '').replace(/\D/g, '');
-        $event.target.value = pasted;
-        window.applyMask($event, @js($mask));
-        value = $event.target.value;
-    "
+    x-on:input.capture="window.applyMask($event, @js($mask))"
+    x-on:paste="window.formatAfterPaste($event, @js($mask))"
+    x-on:blur="window.applyMask($event, @js($mask))"
     {{ $attributes->except(['wire:model', 'wire:model.live', 'wire:model.blur', 'wire:model.defer'])->merge(['class' => 'mc-input']) }}
 />

@@ -50,21 +50,35 @@
     }
 
     .mc-field {
-        @apply flex w-full flex-col;
+        @apply flex w-full min-w-0 flex-col;
     }
 
     .mc-input {
-        @apply w-full rounded-lg border-brand-border bg-white text-sm text-brand-black shadow-sm placeholder:text-zinc-400 focus:border-brand-orange focus:ring-brand-orange;
+        @apply w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-brand-black shadow-sm placeholder:text-zinc-400 focus:border-brand-orange focus:ring-brand-orange;
+    }
+
+    input.mc-input:not([type='checkbox']):not([type='radio']):not([type='file']),
+    select.mc-input {
+        @apply h-10;
+    }
+
+    textarea.mc-input {
+        @apply min-h-[5rem] resize-y;
+    }
+
+    .mc-input-invalid {
+        @apply border-red-500 ring-1 ring-red-500;
     }
 
     .mc-field .mc-input,
     .mc-field select.mc-input,
-    .mc-field textarea.mc-input {
+    .mc-field textarea.mc-input,
+    .mc-field .mc-select2-wrap {
         @apply mt-1.5;
     }
 
     .mc-btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2;
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold no-underline transition focus:outline-none focus:ring-2 focus:ring-offset-2 hover:no-underline;
     }
 
     .mc-btn-primary {
@@ -92,27 +106,62 @@
     }
 
     .mc-table {
-        @apply min-w-full text-sm;
+        @apply w-full min-w-full border-collapse text-sm;
     }
 
     .mc-table thead {
         @apply bg-zinc-50;
     }
 
+    .mc-table th,
+    .mc-table td {
+        @apply align-middle px-4 py-3;
+    }
+
     .mc-table th {
-        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-brand-muted;
+        @apply whitespace-nowrap text-left text-xs font-semibold uppercase tracking-wide text-brand-muted;
     }
 
     .mc-table td {
-        @apply px-4 py-3 text-brand-black;
+        @apply text-brand-black;
     }
 
     .mc-table tbody {
         @apply divide-y divide-brand-border;
     }
 
+    .mc-table .mc-col-right {
+        @apply text-right tabular-nums;
+    }
+
+    .mc-table .mc-col-center {
+        @apply text-center;
+    }
+
+    .mc-table .mc-col-actions {
+        @apply w-24 whitespace-nowrap text-right;
+    }
+
+    .mc-table-actions {
+        @apply inline-flex items-center justify-end gap-1;
+    }
+
+    .mc-btn-icon {
+        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm text-brand-muted transition hover:bg-zinc-100 hover:text-brand-black focus:outline-none focus:ring-2 focus:ring-zinc-300 focus:ring-offset-1;
+    }
+
+    .mc-btn-icon-danger {
+        @apply mc-btn-icon text-red-600 hover:bg-red-50 hover:text-red-700;
+    }
+
     .mc-badge {
-        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold no-underline;
+    }
+
+    a.mc-badge,
+    a.mc-badge:hover,
+    a.mc-badge:focus {
+        @apply no-underline;
     }
 
     .mc-badge-success {
@@ -124,7 +173,7 @@
     }
 
     .mc-link {
-        @apply font-medium text-brand-orange hover:text-brand-orange-dark hover:underline;
+        @apply font-medium text-brand-orange no-underline hover:text-brand-orange-dark hover:no-underline;
     }
 
     .mc-stat-card {
@@ -140,11 +189,11 @@
     }
 
     .mc-nav-link {
-        @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-zinc-800 hover:text-white;
+        @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 no-underline transition hover:bg-zinc-800 hover:text-white hover:no-underline;
     }
 
     .mc-nav-link-active {
-        @apply mc-nav-link bg-zinc-800 text-white;
+        @apply mc-nav-link bg-zinc-800 text-white no-underline hover:no-underline;
     }
 
     .mc-nav-link-active .mc-nav-icon {
@@ -164,11 +213,25 @@
     }
 
     .mc-item-row {
-        @apply grid grid-cols-1 items-start gap-4 rounded-lg border border-brand-border bg-zinc-50/50 p-4 md:grid-cols-3;
+        @apply grid grid-cols-1 gap-4 rounded-lg border border-brand-border bg-zinc-50/50 p-4 md:grid-cols-3;
     }
 
-    .mc-form-grid .mc-field {
+    .mc-form-grid .mc-field,
+    .mc-item-row .mc-field {
         @apply h-full;
+    }
+
+    .mc-filter-bar {
+        @apply grid grid-cols-1 gap-4 rounded-xl border border-brand-border bg-white p-4 shadow-card md:grid-cols-2 lg:grid-cols-5;
+    }
+
+    .mc-filter-bar .mc-input,
+    .mc-filter-bar .mc-select2-wrap {
+        @apply !mt-0;
+    }
+
+    .mc-filter-bar .mc-btn {
+        @apply h-10 w-full;
     }
 
     .mc-upload-zone {

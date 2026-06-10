@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\BrazilianNumber;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,8 +41,18 @@ class Product extends Model
         return $this->hasMany(StockMovement::class);
     }
 
+    public function stockUnits(): int
+    {
+        return BrazilianNumber::toInteger($this->stock_quantity);
+    }
+
+    public function formattedStock(): string
+    {
+        return BrazilianNumber::formatInteger($this->stock_quantity);
+    }
+
     public function hasLowStock(): bool
     {
-        return (float) $this->stock_quantity < 1;
+        return $this->stockUnits() < 1;
     }
 }

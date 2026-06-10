@@ -26,7 +26,9 @@ class SaleService
             foreach ($payload['items'] as $itemData) {
                 $product = Product::lockForUpdate()->findOrFail($itemData['product_id']);
 
-                if ((float) $itemData['quantity'] > (float) $product->stock_quantity) {
+                $quantity = (int) $itemData['quantity'];
+
+                if ($quantity > $product->stockUnits()) {
                     throw new \InvalidArgumentException(
                         "Estoque insuficiente para {$product->name}."
                     );
@@ -35,12 +37,12 @@ class SaleService
                 $item = SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $itemData['product_id'],
-                    'quantity' => $itemData['quantity'],
+                    'quantity' => $quantity,
                     'unit_price' => $itemData['unit_price'],
-                    'total' => $itemData['quantity'] * $itemData['unit_price'],
+                    'total' => $quantity * $itemData['unit_price'],
                 ]);
 
-                $this->inventoryService->decreaseFromSale($product, (float) $item->quantity, $sale);
+                $this->inventoryService->decreaseFromSale($product, $quantity, $sale);
             }
 
             return $sale->load('items.product');

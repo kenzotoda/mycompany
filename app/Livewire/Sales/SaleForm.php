@@ -88,7 +88,7 @@ class SaleForm extends Component
             'installments' => [$isCredit ? 'required' : 'nullable', 'integer', 'min:2', 'max:24'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
-            'items.*.quantity' => ['required', 'numeric', 'gt:0'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['required', 'numeric', 'gt:0'],
         ], [
             'installments.required' => 'Informe em quantas parcelas será o crédito.',
@@ -98,10 +98,10 @@ class SaleForm extends Component
         foreach ($this->items as $index => $item) {
             $product = Product::find($item['product_id']);
 
-            if ($product && (float) $item['quantity'] > (float) $product->stock_quantity) {
+            if ($product && (int) $item['quantity'] > $product->stockUnits()) {
                 $this->addError(
                     "items.$index.quantity",
-                    'Estoque insuficiente. Disponível: '.number_format($product->stock_quantity, 3, ',', '.')
+                    'Estoque insuficiente. Disponível: '.$product->formattedStock()
                 );
 
                 return;

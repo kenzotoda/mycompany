@@ -7,4 +7,5 @@
         </label>
     @endif
     {{ $slot }}
+    <p class="mc-field-error mt-1 hidden text-xs text-red-600" data-frontend-error role="alert"></p>
 </div>

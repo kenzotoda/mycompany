@@ -24,6 +24,11 @@ Route::middleware('auth')->group(function () {
     Route::view('/vendas', 'pages.sales.index')->name('sales.index');
     Route::view('/vendas/nova', 'pages.sales.create')->name('sales.create');
     Route::view('/produtos/novo', 'pages.products.create')->name('products.create');
+    Route::get('/produtos/{product}/editar', function (\App\Models\Product $product) {
+        abort_unless($product->company_id === auth()->user()->company_id, 403);
+
+        return view('pages.products.edit', compact('product'));
+    })->name('products.edit');
     Route::view('/estoque/produtos', 'pages.products.index')->name('products.index');
     Route::get('/anexos/{attachment}/preview', [AttachmentController::class, 'preview'])->name('attachments.preview');
 });

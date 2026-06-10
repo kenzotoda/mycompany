@@ -9,14 +9,14 @@
         </a>
     </div>
 
-    <form wire:submit="save" class="mc-card mc-form-section">
+    <form class="mc-card mc-form-section" novalidate x-on:keydown.enter.prevent="window.submitValidatedForm($el, () => $wire.save())">
         <x-field label="Fornecedor" required>
-            <select wire:model="supplier_id" class="mc-input">
+            <x-searchable-select wire:model="supplier_id" required data-error-required="Selecione um fornecedor.">
                 <option value="">Selecione um fornecedor</option>
                 @foreach ($suppliers as $supplier)
                     <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                 @endforeach
-            </select>
+            </x-searchable-select>
             @error('supplier_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             @if ($suppliers->isEmpty())
                 <p class="mt-2 mc-hint">Nenhum fornecedor cadastrado. <a href="{{ route('suppliers.index') }}" class="mc-link">Cadastre em Fornecedores</a>.</p>
@@ -25,7 +25,7 @@
 
         <div class="mc-form-grid">
             <x-field label="Data da compra">
-                <input type="date" wire:model="purchase_date" class="mc-input">
+                <input type="date" wire:model="purchase_date" class="mc-input" required data-error-required="Informe a data da compra.">
                 @error('purchase_date') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
             </x-field>
             <x-field label="Forma de pagamento">
@@ -46,20 +46,20 @@
             @foreach ($items as $index => $item)
                 <div class="mc-item-row">
                     <x-field label="Produto" required>
-                        <select wire:model="items.{{ $index }}.product_id" class="mc-input">
+                        <x-searchable-select wire:model="items.{{ $index }}.product_id" wire:key="purchase-product-{{ $index }}" required data-error-required="Selecione o produto.">
                             <option value="">Selecione</option>
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}">{{ $product->name }}</option>
                             @endforeach
-                        </select>
+                        </x-searchable-select>
                         @error('items.'.$index.'.product_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </x-field>
                     <x-field label="Quantidade" required>
-                        <x-numeric-input wire:model="items.{{ $index }}.quantity" placeholder="0" />
+                        <x-numeric-input :decimal="false" wire:model="items.{{ $index }}.quantity" placeholder="0" required data-validate-min="1" data-numeric-integer data-error-required="Informe a quantidade." data-error-min="A quantidade deve ser no mínimo 1." />
                         @error('items.'.$index.'.quantity') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </x-field>
                     <x-field label="Valor unitário" required>
-                        <x-numeric-input wire:model="items.{{ $index }}.unit_price" placeholder="0,00" />
+                        <x-numeric-input wire:model="items.{{ $index }}.unit_price" placeholder="0,00" required data-validate-gt-zero data-error-required="Informe o valor unitário." />
                         @error('items.'.$index.'.unit_price') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </x-field>
                 </div>
@@ -76,7 +76,12 @@
 
         @include('livewire.shared.document-upload', ['label' => 'Anexar documentos (nota fiscal, boleto, comprovante...)'])
 
-        <button type="submit" class="mc-btn-primary">
+        <button
+            type="button"
+            wire:loading.attr="disabled"
+            x-on:click="window.submitValidatedForm($el.closest('form'), () => $wire.save())"
+            class="mc-btn-primary"
+        >
             <i class="fa-solid fa-floppy-disk"></i> Salvar compra
         </button>
     </form>

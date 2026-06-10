@@ -1,0 +1,113 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'select2/dist/css/select2.min.css';
+@import 'select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css';
+
+/*
+ * Bootstrap Reboot aplica text-decoration: underline em todos os <a>.
+ * Este arquivo carrega depois do app.css — reverte no app inteiro.
+ */
+body a:not(.underline):not([class*='underline']) {
+    text-decoration: none;
+}
+
+body a:not(.underline):not([class*='underline']):hover,
+body a:not(.underline):not([class*='underline']):focus,
+body a:not(.underline):not([class*='underline']):active {
+    text-decoration: none;
+}
+
+/* Área dos selects: visual Bootstrap 5 + Select2 */
+.mc-select2-wrap {
+    width: 100%;
+    position: relative;
+}
+
+.mc-field .mc-select2-wrap,
+.mc-form-section .mc-select2-wrap,
+.mc-item-row .mc-select2-wrap {
+    overflow: visible;
+}
+
+/* Neutraliza estilos do Tailwind Forms no select nativo */
+.mc-select2-wrap .form-select {
+    border-color: var(--bs-border-color, #dee2e6) !important;
+    border-radius: var(--bs-border-radius, 0.375rem) !important;
+    box-shadow: none !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+}
+
+.mc-select2-wrap .form-select:focus {
+    border-color: #f97316 !important;
+    box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.2) !important;
+    outline: 0 !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 {
+    width: 100% !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-selection {
+    min-height: 2.5rem !important;
+    height: 2.5rem !important;
+    padding: 0.5rem 2.25rem 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+    border-radius: 0.5rem !important;
+    border-color: #e4e4e7 !important;
+    display: flex !important;
+    align-items: center !important;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-selection--single {
+    background-position: right 0.75rem center !important;
+    background-size: 14px 10px !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    line-height: 1.25rem !important;
+    padding: 0 !important;
+}
+
+/* Borda laranja (marca) no Select2 */
+.mc-select2-wrap .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.mc-select2-wrap .select2-container--bootstrap-5.select2-container--open .select2-selection {
+    border-color: #f97316 !important;
+    box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.2) !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5.is-invalid .select2-selection {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.2) !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5.select2-container--open .select2-dropdown {
+    border-color: #f97316 !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-dropdown .select2-search--dropdown {
+    display: block !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-dropdown .select2-search__field {
+    display: block !important;
+    width: 100% !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-dropdown .select2-search__field:focus {
+    border-color: #f97316 !important;
+    box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.2) !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-results__option--highlighted {
+    background-color: #f97316 !important;
+    color: #fff !important;
+}
+
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-results__option--selected,
+.mc-select2-wrap .select2-container--bootstrap-5 .select2-results__option[aria-selected='true']:not(.select2-results__option--highlighted) {
+    background-color: #fff7ed !important;
+    color: #18181b !important;
+}
+

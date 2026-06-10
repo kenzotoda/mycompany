@@ -1,23 +1,34 @@
 <div class="space-y-4">
     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Central de relatorios</h2>
 
-    <div class="grid grid-cols-1 gap-3 rounded-xl bg-white p-4 shadow dark:bg-gray-800 md:grid-cols-5">
-        <input type="date" wire:model.live="startDate" class="rounded-lg border-gray-300 text-sm dark:bg-gray-900">
-        <input type="date" wire:model.live="endDate" class="rounded-lg border-gray-300 text-sm dark:bg-gray-900">
-        <select wire:model.live="reportType" class="rounded-lg border-gray-300 text-sm dark:bg-gray-900">
-            <option value="all">Compras e vendas</option>
-            <option value="purchases">Somente compras</option>
-            <option value="sales">Somente vendas</option>
-        </select>
-        <select wire:model.live="paymentStatus" class="rounded-lg border-gray-300 text-sm dark:bg-gray-900">
-            <option value="all">Todos status</option>
-            <option value="pending">Pendente</option>
-            <option value="paid">Pago</option>
-            <option value="partial">Parcial</option>
-        </select>
-        <div class="flex gap-2">
-            <button wire:click="exportPdf" class="w-full rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-500">Exportar PDF</button>
-            <button wire:click="exportExcel" class="w-full rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500">Exportar Excel</button>
+    <div class="mc-filter-bar">
+        <x-field label="Data inicial">
+            <input type="date" wire:model.live="startDate" class="mc-input">
+        </x-field>
+        <x-field label="Data final">
+            <input type="date" wire:model.live="endDate" class="mc-input">
+        </x-field>
+        <x-field label="Tipo">
+            <x-searchable-select wire:model.live="reportType">
+                <option value="all">Compras e vendas</option>
+                <option value="purchases">Somente compras</option>
+                <option value="sales">Somente vendas</option>
+            </x-searchable-select>
+        </x-field>
+        <x-field label="Status">
+            <x-searchable-select wire:model.live="paymentStatus">
+                <option value="all">Todos status</option>
+                <option value="pending">Pendente</option>
+                <option value="paid">Pago</option>
+                <option value="partial">Parcial</option>
+            </x-searchable-select>
+        </x-field>
+        <div class="flex w-full flex-col">
+            <span class="mc-label invisible select-none" aria-hidden="true">&nbsp;</span>
+            <div class="mt-1.5 flex gap-2">
+                <button type="button" wire:click="exportPdf" class="mc-btn h-10 flex-1 bg-rose-600 text-white hover:bg-rose-500 focus:ring-rose-500">Exportar PDF</button>
+                <button type="button" wire:click="exportExcel" class="mc-btn h-10 flex-1 bg-emerald-600 text-white hover:bg-emerald-500 focus:ring-emerald-500">Exportar Excel</button>
+            </div>
         </div>
     </div>
 
@@ -36,28 +47,28 @@
         </div>
     </div>
 
-    <div class="overflow-hidden rounded-xl bg-white shadow dark:bg-gray-800">
-        <table class="min-w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-700/50">
+    <div class="mc-table-wrap">
+        <table class="mc-table">
+            <thead>
                 <tr>
-                    <th class="px-4 py-3 text-left">Tipo</th>
-                    <th class="px-4 py-3 text-left">Numero</th>
-                    <th class="px-4 py-3 text-left">Data</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-right">Total</th>
+                    <th class="w-28">Tipo</th>
+                    <th class="w-28">Numero</th>
+                    <th class="w-28">Data</th>
+                    <th>Status</th>
+                    <th class="mc-col-right w-32">Total</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
                 @forelse ($rows as $row)
                     <tr>
-                        <td class="px-4 py-3">{{ $row['type'] }}</td>
-                        <td class="px-4 py-3">{{ $row['number'] }}</td>
-                        <td class="px-4 py-3">{{ $row['date'] }}</td>
-                        <td class="px-4 py-3">{{ $row['status'] }}</td>
-                        <td class="px-4 py-3 text-right">R$ {{ number_format($row['total'], 2, ',', '.') }}</td>
+                        <td class="whitespace-nowrap">{{ $row['type'] }}</td>
+                        <td class="whitespace-nowrap">{{ $row['number'] }}</td>
+                        <td class="whitespace-nowrap">{{ $row['date'] }}</td>
+                        <td>{{ $row['status'] }}</td>
+                        <td class="mc-col-right font-semibold">R$ {{ number_format($row['total'], 2, ',', '.') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Sem dados para o filtro selecionado.</td></tr>
+                    <tr><td colspan="5" class="py-12 text-center text-brand-muted">Sem dados para o filtro selecionado.</td></tr>
                 @endforelse
             </tbody>
         </table>

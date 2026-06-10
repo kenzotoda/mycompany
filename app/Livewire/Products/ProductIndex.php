@@ -10,6 +10,19 @@ class ProductIndex extends Component
 {
     use WithPagination;
 
+    public function delete(int $productId): void
+    {
+        $product = Product::query()
+            ->where('company_id', auth()->user()->company_id)
+            ->findOrFail($productId);
+
+        $this->authorize('delete', $product);
+
+        $product->delete();
+
+        session()->flash('status', 'Produto excluído com sucesso.');
+    }
+
     public function render()
     {
         $products = Product::with('category')

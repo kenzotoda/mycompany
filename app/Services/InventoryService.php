@@ -7,7 +7,7 @@ use App\Models\StockMovement;
 
 class InventoryService
 {
-    public function increaseFromPurchase(Product $product, float $quantity, object $reference): void
+    public function increaseFromPurchase(Product $product, int $quantity, object $reference): void
     {
         $product->increment('stock_quantity', $quantity);
 
@@ -22,7 +22,7 @@ class InventoryService
         ]);
     }
 
-    public function decreaseFromSale(Product $product, float $quantity, object $reference): void
+    public function decreaseFromSale(Product $product, int $quantity, object $reference): void
     {
         $product->decrement('stock_quantity', $quantity);
 

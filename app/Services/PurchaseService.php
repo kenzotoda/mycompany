@@ -26,15 +26,17 @@ class PurchaseService
             ]);
 
             foreach ($payload['items'] as $itemData) {
+                $quantity = (int) $itemData['quantity'];
+
                 $item = PurchaseItem::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $itemData['product_id'],
-                    'quantity' => $itemData['quantity'],
+                    'quantity' => $quantity,
                     'unit_price' => $itemData['unit_price'],
-                    'total' => $itemData['quantity'] * $itemData['unit_price'],
+                    'total' => $quantity * $itemData['unit_price'],
                 ]);
 
-                $this->inventoryService->increaseFromPurchase($item->product, (float) $item->quantity, $purchase);
+                $this->inventoryService->increaseFromPurchase($item->product, $quantity, $purchase);
             }
 
             return $purchase->load('items.product');

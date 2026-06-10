@@ -20,7 +20,7 @@
                     <button
                         type="button"
                         wire:click="removeUploadedDocument({{ $index }})"
-                        class="shrink-0 text-xs text-red-600 hover:underline"
+                        class="shrink-0 text-xs text-red-600 hover:text-red-700"
                     >
                         Remover
                     </button>
