@@ -19,6 +19,18 @@
         Alerta de estoque baixo só aparece quando a quantidade chega a <strong>zero</strong>.
     </div>
 
+    <div class="mc-card-sm">
+        <div class="relative">
+            <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-brand-muted"></i>
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="query"
+                placeholder="Pesquisar por produto, SKU ou fornecedor..."
+                class="mc-input !mt-0 pl-10"
+            />
+        </div>
+    </div>
+
     <div class="mc-table-wrap">
         <table class="mc-table">
             <thead>
